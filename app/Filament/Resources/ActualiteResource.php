@@ -59,6 +59,17 @@ class ActualiteResource extends Resource
                                 Forms\Components\RichEditor::make('contenu_ar')
                                     ->label('Contenu détaillé (AR)'),
                             ]),
+
+                        Forms\Components\Section::make('Galerie de Photos Complémentaires')
+                            ->schema([
+                                Forms\Components\FileUpload::make('galerie_photos')
+                                    ->label('Photos de l\'événement / de l\'article')
+                                    ->image()
+                                    ->multiple() // Permet de téléverser plusieurs photos
+                                    ->reorderable()
+                                    ->panelLayout('grid')
+                                    ->directory('actualites/galerie'),
+                            ]),
                     ])->columnSpan(2),
 
                 Forms\Components\Group::make()
@@ -95,7 +106,7 @@ class ActualiteResource extends Resource
                                     ->default(now()),
 
                                 Forms\Components\Toggle::make('featured')
-                                    ->label('A la une (Carrousel principal)')
+                                    ->label('À la une (Carrousel principal)')
                                     ->default(false),
                             ]),
 
@@ -109,12 +120,12 @@ class ActualiteResource extends Resource
                                     ->placeholder('ex: Salle des conférences'),
                             ]),
 
-                        Forms\Components\Section::make('Image d\'illustration')
+                        Forms\Components\Section::make('Image Couverture')
                             ->schema([
                                 Forms\Components\FileUpload::make('image')
-                                    ->label('Image principale')
+                                    ->label('Image principale (Couverture)')
                                     ->image()
-                                    ->directory('actualites'),
+                                    ->directory('actualites/couverture'),
                             ]),
                     ])->columnSpan(1),
             ])->columns(3);
@@ -125,7 +136,7 @@ class ActualiteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image')
-                    ->label('Image'),
+                    ->label('Couverture'),
 
                 Tables\Columns\TextColumn::make('titre_fr')
                     ->label('Titre (FR)')

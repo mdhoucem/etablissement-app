@@ -12,13 +12,14 @@ return new class extends Migration {
             $table->string('titre_fr');
             $table->string('titre_ar');
             $table->string('slug')->unique();
-            $table->string('image')->nullable();
+            $table->string('image')->nullable(); // Image de couverture principale
+            $table->json('galerie_photos')->nullable(); // Multiples photos (Format JSON)
             $table->text('resume_fr')->nullable();
             $table->text('resume_ar')->nullable();
             $table->longText('contenu_fr')->nullable();
             $table->longText('contenu_ar')->nullable();
             $table->enum('type', ['actualite', 'evenement', 'annonce'])->default('actualite');
-            $table->dateTime('date_evenement')->nullable(); // Pour les événements
+            $table->dateTime('date_evenement')->nullable();
             $table->string('lieu_evenement')->nullable();
             $table->boolean('featured')->default(false);
             $table->enum('status', ['brouillon', 'publie', 'archive'])->default('publie');
