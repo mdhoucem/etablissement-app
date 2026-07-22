@@ -16,64 +16,39 @@ class ContactMessageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
 
-    protected static ?string $navigationGroup = 'Communication';
+    protected static ?string $navigationGroup = 'Gestion';
 
-    protected static ?string $modelLabel = 'Message Reçu';
+    protected static ?string $modelLabel = 'Message de contact';
 
-    protected static ?string $pluralModelLabel = 'Messages Reçus';
+    protected static ?string $pluralModelLabel = 'Messages de contact';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informations de l\'expéditeur')
+                Forms\Components\Section::make('Détails du message')
                     ->schema([
-                        Forms\Components\TextInput::make('nom')
-                            ->label('Nom & Prénom')
-                            ->disabled(),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nom complet')
+                            ->required()
+                            ->maxLength(255),
 
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label('Adresse E-mail')
                             ->email()
-                            ->disabled(),
+                            ->required()
+                            ->maxLength(255),
 
-                        Forms\Components\TextInput::make('telephone')
-                            ->label('Téléphone')
-                            ->disabled(),
+                        Forms\Components\TextInput::make('subject')
+                            ->label('Sujet')
+                            ->maxLength(255),
 
-                        Forms\Components\TextInput::make('sujet')
-                            ->label('Sujet du message')
-                            ->disabled()
-                            ->columnSpanFull(),
-                    ])->columns(3),
-
-                Forms\Components\Section::make('Contenu du message')
-                    ->schema([
                         Forms\Components\Textarea::make('message')
                             ->label('Message')
-                            ->disabled()
+                            ->required()
                             ->rows(5)
                             ->columnSpanFull(),
-                    ]),
-
-                Forms\Components\Section::make('Gestion Administrative')
-                    ->schema([
-                        Forms\Components\Select::make('status')
-                            ->label('Statut du traitement')
-                            ->options([
-                                'non_lu' => 'Non lu',
-                                'lu' => 'Lu',
-                                'traite' => 'Traité',
-                                'archive' => 'Archivé',
-                            ])
-                            ->default('non_lu')
-                            ->required(),
-
-                        Forms\Components\Textarea::make('notes_interne')
-                            ->label('Notes internes / Réponse apportée')
-                            ->placeholder('Saisissez ici les actions entreprises suite à ce message...')
-                            ->rows(3),
-                    ]),
+                    ])->columns(2),
             ]);
     }
 
@@ -81,29 +56,20 @@ class ContactMessageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nom')
-                    ->label('Expéditeur')
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nom')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
-                    ->searchable(),
+                    ->label('E-mail')
+                    ->searchable()
+                    ->sortable(),
 
-                Tables\Columns\TextColumn::make('sujet')
+                Tables\Columns\TextColumn::make('subject')
                     ->label('Sujet')
-                    ->limit(30)
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Statut')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'non_lu' => 'danger',
-                        'lu' => 'warning',
-                        'traite' => 'success',
-                        'archive' => 'gray',
-                    }),
+                    ->searchable()
+                    ->limit(30),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Reçu le')
@@ -112,25 +78,17 @@ class ContactMessageResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'non_lu' => 'Non lu',
-                        'lu' => 'Lu',
-                        'traite' => 'Traité',
-                        'archive' => 'Archivé',
-                    ]),
+                //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        // Affiche un badge dans le menu latéral avec le nombre de messages non lus
-        return static::getModel()::where('status', 'non_lu')->count() ?: null;
     }
 
     public static function getPages(): array
