@@ -28,7 +28,7 @@ class ContactMessageResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Détails du message')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        Forms\Components\TextInput::make('nom')
                             ->label('Nom complet')
                             ->required()
                             ->maxLength(255),
@@ -39,7 +39,12 @@ class ContactMessageResource extends Resource
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\TextInput::make('subject')
+                        Forms\Components\TextInput::make('telephone')
+                            ->label('Téléphone')
+                            ->tel()
+                            ->maxLength(20),
+
+                        Forms\Components\TextInput::make('sujet')
                             ->label('Sujet')
                             ->maxLength(255),
 
@@ -47,6 +52,23 @@ class ContactMessageResource extends Resource
                             ->label('Message')
                             ->required()
                             ->rows(5)
+                            ->columnSpanFull()
+                            ->disabled(),
+
+                        Forms\Components\Select::make('status')
+                            ->label('Statut')
+                            ->options([
+                                'nouveau' => 'Nouveau',
+                                'lu' => 'Lu',
+                                'traite' => 'Traité',
+                                'archive' => 'Archivé',
+                            ])
+                            ->default('nouveau')
+                            ->required(),
+
+                        Forms\Components\Textarea::make('notes_interne')
+                            ->label('Notes internes (usage admin uniquement)')
+                            ->rows(3)
                             ->columnSpanFull(),
                     ])->columns(2),
             ]);
@@ -56,7 +78,7 @@ class ContactMessageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('nom')
                     ->label('Nom')
                     ->searchable()
                     ->sortable(),
@@ -66,10 +88,25 @@ class ContactMessageResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('subject')
+                Tables\Columns\TextColumn::make('telephone')
+                    ->label('Téléphone')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('sujet')
                     ->label('Sujet')
                     ->searchable()
                     ->limit(30),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Statut')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'nouveau' => 'danger',
+                        'lu' => 'warning',
+                        'traite' => 'success',
+                        'archive' => 'gray',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Reçu le')
@@ -78,10 +115,17 @@ class ContactMessageResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'nouveau' => 'Nouveau',
+                        'lu' => 'Lu',
+                        'traite' => 'Traité',
+                        'archive' => 'Archivé',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
