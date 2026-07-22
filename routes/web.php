@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Livewire\ServicesList;
 use App\Livewire\ServiceDetail;
+use App\Livewire\DemandeAssistanceForm;
+use App\Livewire\SuiviDemande;
 
 Route::get('lang/{locale}', function ($locale) {
     if (in_array($locale, ['fr', 'ar'])) {
@@ -21,3 +23,6 @@ Route::get('/test-language-switcher', function () {
 
 Route::get('/services', ServicesList::class)->name('services.index');
 Route::get('/services/{slug}', ServiceDetail::class)->name('services.detail');
+
+Route::get('/demande-assistance/{service_id?}', DemandeAssistanceForm::class)->name('demande-assistance.form');
+Route::get('/suivi-demande', SuiviDemande::class)->name('suivi-demande');
