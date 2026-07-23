@@ -1,85 +1,47 @@
-<div class="max-w-7xl mx-auto px-4 py-10" dir="{{ $locale === 'ar' ? 'rtl' : 'ltr' }}">
+<div class="container py-section">
+    <div class="flex flex-col gap-4 mb-8" style="flex-direction: row; flex-wrap: wrap;">
+        <input type="text" wire:model.live.debounce.300ms="search"
+            placeholder="{{ $locale === 'ar' ? 'ابحث عن خدمة...' : 'Rechercher un service...' }}"
+            class="flex-1" style="border:1px solid var(--color-outline-variant); border-radius:var(--radius); padding:12px 16px;">
 
-    {{-- Barre de filtres --}}
-    <div class="flex flex-col md:flex-row gap-4 mb-8">
-        <div class="flex-1">
-            <input
-                type="text"
-                wire:model.live.debounce.300ms="search"
-                placeholder="{{ $locale === 'ar' ? 'ابحث عن خدمة...' : 'Rechercher un service...' }}"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-start"
-            >
-        </div>
-
-        <div class="w-full md:w-72">
-            <select
-                wire:model.live="groupeServiceId"
-                class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-                <option value="">
-                    {{ $locale === 'ar' ? 'كل الفئات' : 'Tous les groupes' }}
-                </option>
-                @foreach ($groupes as $groupe)
-                    <option value="{{ $groupe->id }}">
-                        {{ $locale === 'ar' ? $groupe->titre_ar : $groupe->titre_fr }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+        <select wire:model.live="groupeServiceId" style="border:1px solid var(--color-outline-variant); border-radius:var(--radius); padding:12px 16px; min-width:220px;">
+            <option value="">{{ $locale === 'ar' ? 'كل الفئات' : 'Tous les groupes' }}</option>
+            @foreach ($groupes as $groupe)
+                <option value="{{ $groupe->id }}">{{ $locale === 'ar' ? $groupe->titre_ar : $groupe->titre_fr }}</option>
+            @endforeach
+        </select>
 
         @if ($search || $groupeServiceId)
-            <button
-                wire:click="resetFilters"
-                type="button"
-                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm font-medium whitespace-nowrap"
-            >
+            <button wire:click="resetFilters" type="button" class="btn btn-ghost">
                 {{ $locale === 'ar' ? 'إعادة تعيين' : 'Réinitialiser' }}
             </button>
         @endif
     </div>
 
-    {{-- Grille des services --}}
-    <div wire:loading.class="opacity-50" class="transition-opacity">
+    <div wire:loading.class="opacity-50">
         @if ($services->count())
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-3">
                 @foreach ($services as $service)
-
-                        href="{{ route('services.detail', $service->slug) }}"
-                        wire:navigate
-                        class="group block bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all p-6 text-start"
-                    >
+                    <a href="{{ route('services.detail', $service->slug) }}" wire:navigate class="card">
                         @if ($service->featured)
-                            <span class="inline-block mb-3 px-2 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">
-                                {{ $locale === 'ar' ? 'مميز' : 'À la une' }}
-                            </span>
+                            <span class="badge badge-featured mb-4">{{ $locale === 'ar' ? 'مميز' : 'À la une' }}</span>
                         @endif
-
-                        <p class="text-xs font-medium text-blue-600 mb-1">
+                        <p class="text-small text-secondary mb-2" style="font-weight:700;">
                             {{ $locale === 'ar' ? $service->groupeService?->titre_ar : $service->groupeService?->titre_fr }}
                         </p>
-
-                        <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                            {{ $locale === 'ar' ? $service->titre_ar : $service->titre_fr }}
-                        </h3>
-
+                        <h3 class="h3">{{ $locale === 'ar' ? $service->titre_ar : $service->titre_fr }}</h3>
                         @if ($service->type_service)
-                            <p class="text-sm text-gray-500 mt-2">{{ $service->type_service }}</p>
+                            <p class="text-small text-muted mt-2">{{ $service->type_service }}</p>
                         @endif
-
-                        <span class="inline-block mt-4 text-sm font-medium text-blue-600">
+                        <span class="text-small mt-4" style="display:inline-block; color:var(--color-primary); font-weight:700;">
                             {{ $locale === 'ar' ? 'اقرأ المزيد ←' : 'Voir le détail →' }}
                         </span>
                     </a>
                 @endforeach
             </div>
-
-            <div class="mt-8">
-                {{ $services->links() }}
-            </div>
+            <div class="pagination">{{ $services->links() }}</div>
         @else
-            <div class="text-center py-16 text-gray-400">
-                {{ $locale === 'ar' ? 'لا توجد خدمات مطابقة' : 'Aucun service ne correspond à votre recherche.' }}
-            </div>
+            <div class="empty-state">{{ $locale === 'ar' ? 'لا توجد خدمات مطابقة' : 'Aucun service ne correspond à votre recherche.' }}</div>
         @endif
     </div>
 </div>

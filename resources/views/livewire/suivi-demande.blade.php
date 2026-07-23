@@ -1,46 +1,33 @@
-<div class="max-w-xl mx-auto px-4 py-10" dir="{{ $locale === 'ar' ? 'rtl' : 'ltr' }}">
+<div class="container py-section" style="max-width: 550px;">
+    <h1 class="h1 mb-6">{{ $locale === 'ar' ? 'تتبع طلبي' : 'Suivre ma demande' }}</h1>
 
-    <h1 class="text-2xl font-bold text-gray-900 mb-6 text-start">
-        {{ $locale === 'ar' ? 'تتبع طلبي' : 'Suivre ma demande' }}
-    </h1>
-
-    <form wire:submit="rechercher" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 text-start">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ $locale === 'ar' ? 'رقم المتابعة' : 'Numéro de suivi' }}
-            </label>
-            <input type="text" wire:model="numero_suivi" placeholder="DEM-2026-0001"
-                   class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
-            @error('numero_suivi') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+    <form wire:submit="rechercher" class="card">
+        <div class="field">
+            <label>{{ $locale === 'ar' ? 'رقم المتابعة' : 'Numéro de suivi' }}</label>
+            <input type="text" wire:model="numero_suivi" placeholder="DEM-2026-0001">
+            @error('numero_suivi') <p class="field-error">{{ $message }}</p> @enderror
         </div>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ $locale === 'ar' ? 'رقم بطاقة التعريف' : 'N° CIN' }}
-            </label>
-            <input type="text" wire:model="cin"
-                   class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
-            @error('cin') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+        <div class="field">
+            <label>{{ $locale === 'ar' ? 'رقم بطاقة التعريف' : 'N° CIN' }}</label>
+            <input type="text" wire:model="cin">
+            @error('cin') <p class="field-error">{{ $message }}</p> @enderror
         </div>
-
-        <button type="submit" class="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">
-            {{ $locale === 'ar' ? 'بحث' : 'Rechercher' }}
-        </button>
+        <button type="submit" class="btn btn-primary w-full">{{ $locale === 'ar' ? 'بحث' : 'Rechercher' }}</button>
     </form>
 
     @if ($recherche_effectuee)
         <div class="mt-6">
             @if ($demande)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-start">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="font-mono font-bold text-gray-900">{{ $demande->numero_suivi }}</span>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold
-                            @class([
-                                'bg-amber-100 text-amber-700' => $demande->statut === 'en_attente',
-                                'bg-blue-100 text-blue-700' => $demande->statut === 'en_cours',
-                                'bg-green-100 text-green-700' => $demande->statut === 'traitee',
-                                'bg-red-100 text-red-700' => $demande->statut === 'rejetee',
-                            ])">
+                <div class="card">
+                    <div class="flex justify-between items-center mb-4">
+                        <span style="font-family:monospace; font-weight:700;">{{ $demande->numero_suivi }}</span>
+                        <span class="badge {{ match($demande->statut) {
+                            'en_attente' => 'badge-warning',
+                            'en_cours' => 'badge-info',
+                            'traitee' => 'badge-success',
+                            'rejetee' => 'badge-error',
+                            default => 'badge-info',
+                        } }}">
                             @switch($demande->statut)
                                 @case('en_attente') {{ $locale === 'ar' ? 'قيد الانتظار' : 'En attente' }} @break
                                 @case('en_cours') {{ $locale === 'ar' ? 'قيد المعالجة' : 'En cours de traitement' }} @break
@@ -49,21 +36,17 @@
                             @endswitch
                         </span>
                     </div>
-
-                    <p class="text-sm text-gray-500 mb-1">
+                    <p class="text-small text-muted mb-2">
                         {{ $locale === 'ar' ? 'الخدمة:' : 'Service :' }}
-                        <span class="text-gray-800">
-                            {{ $locale === 'ar' ? $demande->service?->titre_ar : $demande->service?->titre_fr }}
-                        </span>
+                        <span style="color:var(--color-on-surface);">{{ $locale === 'ar' ? $demande->service?->titre_ar : $demande->service?->titre_fr }}</span>
                     </p>
-
-                    <p class="text-sm text-gray-500">
+                    <p class="text-small text-muted">
                         {{ $locale === 'ar' ? 'تاريخ الإرسال:' : 'Date de soumission :' }}
-                        <span class="text-gray-800">{{ $demande->created_at->format('d/m/Y H:i') }}</span>
+                        <span style="color:var(--color-on-surface);">{{ $demande->created_at->format('d/m/Y H:i') }}</span>
                     </p>
                 </div>
             @else
-                <div class="bg-red-50 border border-red-200 rounded-xl p-5 text-center text-red-700">
+                <div class="card text-center" style="border-color:var(--color-error); background:#fdecea; color:var(--color-error);">
                     {{ $locale === 'ar' ? 'لم يتم العثور على أي طلب بهذه المعلومات.' : 'Aucune demande trouvée avec ces informations.' }}
                 </div>
             @endif
