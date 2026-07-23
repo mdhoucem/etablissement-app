@@ -9,6 +9,8 @@ use App\Livewire\SuiviDemande;
 use App\Livewire\ActualitesList;
 use App\Livewire\ActualiteDetail;
 use App\Livewire\DocumenthequeList;
+use App\Livewire\MediathequeGallery;
+
 
 
 // Placeholder — sera remplacé par les vrais composants dans les prochaines parties
@@ -58,3 +60,4 @@ Route::get('/test-partenaires', function () {
     return view('test-partenaires');
 });
 Route::get('/documentheque', DocumenthequeList::class)->name('documentheque.index');
+Route::get('/mediatheque', MediathequeGallery::class)->name('mediatheque.index');
