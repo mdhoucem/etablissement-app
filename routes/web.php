@@ -8,6 +8,7 @@ use App\Livewire\DemandeAssistanceForm;
 use App\Livewire\SuiviDemande;
 use App\Livewire\ActualitesList;
 use App\Livewire\ActualiteDetail;
+use App\Livewire\DocumenthequeList;
 
 
 // Placeholder — sera remplacé par les vrais composants dans les prochaines parties
@@ -56,3 +57,4 @@ Route::get('/actualites/{id}', ActualiteDetail::class)->name('actualites.detail'
 Route::get('/test-partenaires', function () {
     return view('test-partenaires');
 });
+Route::get('/documentheque', DocumenthequeList::class)->name('documentheque.index');
