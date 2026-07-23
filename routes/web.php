@@ -10,6 +10,7 @@ use App\Livewire\ActualitesList;
 use App\Livewire\ActualiteDetail;
 use App\Livewire\DocumenthequeList;
 use App\Livewire\MediathequeGallery;
+use App\Livewire\ContactForm;
 
 
 
@@ -61,3 +62,4 @@ Route::get('/test-partenaires', function () {
 });
 Route::get('/documentheque', DocumenthequeList::class)->name('documentheque.index');
 Route::get('/mediatheque', MediathequeGallery::class)->name('mediatheque.index');
+Route::get('/contact', ContactForm::class)->name('contact.form');
